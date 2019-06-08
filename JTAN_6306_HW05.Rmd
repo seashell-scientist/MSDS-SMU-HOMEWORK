@@ -1,0 +1,111 @@
+---
+title: "JTAN_6306_HW05"
+author: "Jonathan Tan"
+date: "6/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+MSDS 6306:  Doing Data Science – Data Wrangling
+Live session Unit 05 assignment
+Due: Monday February 11th at 11:59pm.  
+
+##Data Import
+```{r download}
+#import stuff
+#install.packages("downloader")
+library(downloader)
+library(dplyr)
+library(tidyverse)
+download("https://raw.githubusercontent.com/BivinSadler/MSDS-6306-Doing-Data-Science/master/Unit%205/yob2016.txt", destfile="yob2016.csv")
+
+names <- read.csv("yob2016.csv", stringsAsFactors = FALSE, header=FALSE)
+#separate into 3 columns of data
+###note, separate function takes tables 
+###example
+####sep1 <- ntest3 %>%separate(V1, c("Name", "Gender", "Quantity")), where ntest3 is a table?
+names2 <- as.matrix(names)
+names3 <- as.table(names2)
+names4 <- as.data.frame(names3)
+sep <- names4 %>% separate(Freq, c("Name", "Gender", "Instances"))# Separates table into columns
+sep2 <- data.frame(sep$Name, sep$Gender, sep$Instances)#trims odd v1 v2 columns
+names(sep2) <- c("Name", "Gender", "Instances") #rename headers
+##b display names and summary
+names(sep2)
+summary(sep2)
+
+##c find error
+grep("yyy", sep2$Name)
+
+sep2$Name[212] #Fionayyy
+
+##d remove that entry
+#form a new dataframe that exclude row 212
+sep3 <- sep2[1:211,]
+sep4 <- sep2[213:length(sep2$Name),] 
+sep5 <- merge(sep3, sep4, by=c("Name", "Gender", "Instances"), all=TRUE)
+sep5$Instances <- as.numeric(sep5$Instances)
+length(sep2$Name)
+length(sep5$Name) #check that sep2 has 32869, and sep5 has 32868
+
+y2016 <- sep5[order(sep5$Gender, -sep5$Instances),]#descending order doens't work for factors!
+#should now be ordered like th 2015 dataset, instances, gender, then name last 
+
+```
+##2 Data Merging
+
+```{r data merging}
+#import yob2015
+download("https://raw.githubusercontent.com/BivinSadler/MSDS-6306-Doing-Data-Science/master/Unit%205/yob2015.txt", destfile="yob2015.csv")
+
+names5 <- read.csv("yob2016.csv", stringsAsFactors = FALSE, header=FALSE)
+names6 <- as.matrix(names5)
+names7 <- as.table(names6)
+names8 <- as.data.frame(names7)
+sep3 <- names8 %>% separate(Freq, c("Name", "Gender", "Instances"))# Separates table into columns
+sep2015 <- data.frame(sep3$Name, sep$Gender, sep$Instances)#trims odd v1 v2 columns
+names(sep2015) <- c("Name", "Gender", "Instances") #rename headers
+##b display names and summary
+names(sep2015)
+summary(sep2015)
+y2015 <- sep2015
+#last 10 names in dataset
+tail(y2015, 10)
+
+#change instances to numeric for sorting
+y2015$Instances <- as.numeric(y2015$Instances)
+#merging
+names.final <- merge(y2015, y2016, by=c("Name", "Gender"), ALL = TRUE)
+y2 <- names.final[order(-names.final$Instances.x, names.final$Gender, names.final$Name),] 
+
+```
+the last 10 names in 2015 are mostly z's, b/c the dataset is sorted both by instance, gender, and name, in that order?
+
+#Data Summary
+
+```{r data summary}
+
+
+
+
+#create total instances column across 2015-2016 (cbind?)
+total <- y2$Instances.x +y2$Instances.y
+y2 <- cbind(y2, total)
+names(y2) <- c("Name", "Gender", "2015 Instances", "2016 Instances", "Total")
+#sort by gender
+y2 <- y2[order(y2$Gender),]
+#narrow to female names only
+#find # of female names
+summary(y2)
+#cutoff at row 18757
+y2.girl.names <-0
+y2.girl.names <- y2[1:18757,]
+#top 10 
+top.10.final <- head(y2.girl.names, 10)
+```
+
+
+

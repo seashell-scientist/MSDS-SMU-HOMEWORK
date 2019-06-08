@@ -1,0 +1,22 @@
+JTAN_6306 HW 05 CODEBOOK
+
+Variables 
+
+names, names1, names2, and further iterations 
+- cycling through data formats until I found one that the seperate function would accept
+
+sep, sep2, sep3, sep4, ect
+- dataframes of separated data, trimmed
+
+y2015, y2016
+- final dataframes for each year's names, gender, and instances
+
+y2
+- final final data frame(should be named final but I didn't want to go back
+and change everything), sorted with total column for instances across
+both years
+- it is super weird how some names have identical instances across both years, 
+a mistake on my part??
+
+top.10.final 
+- list of the 10 most popular female child names from 2015-2016
